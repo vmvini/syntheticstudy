@@ -21,16 +21,19 @@ function CanvasProps(id, width, height, max_zoom, min_zoom){
 
 
 //StageManagment objeto que gerencia o stage
-function StageManagement(canvasProps, stage, listenerManager){
+function StageManagement(mapId, canvasProps, stage, listenerManager){
 
 	this.canvasProps = canvasProps;
 	this.stage = stage;
 	this.listenerManager = listenerManager;
 	this.behaviors = [];
+	this.mapId = mapId;
+	this.dao = new StageFrameDAO();
 
-	
-
-	this.currentFrame = new StageFrame(this.stage); //primeiro frame é vazio
+	//primeiro frame pai de todos os outros do mapId não possui conteúdo.
+	this.currentFrame = new StageFrame(this.mapId, this.stage, null, null, "origin"); 
+	//persistir no mysql através do StageFrameDAO
+	this.dao.addStageFrame(this.currentFrame);
 
 	this.originFrame = this.currentFrame;
 	
@@ -41,11 +44,15 @@ function StageManagement(canvasProps, stage, listenerManager){
 	}
 
 	this.addText = function(stringtext, x, y){
-		var label1 = new StageFrame(this.stage, this.currentFrame, stringtext, "48px Arial", "#000");
+		//constructor StageFrame(map, stage2, parentFrame, referredFrame, stringtext, font, color)
+		var label1 = new StageFrame(this.mapId, this.stage, this.currentFrame, null, stringtext, "48px Arial", "#000");
 		label1.x = x;
 		label1.y = y;
 		label1.alpha = 1;
 		label1.lineWidth = 1000;
+
+		this.dao.addStageFrame(label1);
+
 
 		var hit = new createjs.Shape();
 
