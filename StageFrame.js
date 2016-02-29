@@ -1,7 +1,7 @@
 
 //Objeto que representa um frame que contem elementos desenhados no stage. frame é o nivel de zoom
 //RECOMENDO RENOMEAR PARA StageTextFrame
-function StageFrame(stage2, parentFrame, stringtext, font, color){
+function StageFrame(map, stage2, parentFrame, referredFrame, stringtext, font, color){
 	createjs.Text.call(this, stringtext, font, color);
 
 	this.stage2 = stage2;
@@ -12,6 +12,9 @@ function StageFrame(stage2, parentFrame, stringtext, font, color){
 
 	this.stageTransform;
 
+	this.map = map;
+
+	this.referredFrame = referredFrame;
 	
 
 
