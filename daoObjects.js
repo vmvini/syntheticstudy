@@ -50,25 +50,32 @@ function StageFrameDAO(stageManager){
 		var that = this;
 		return function(arrayStageFrame){
 			//processar o array e construir o stageframe origin
-			var stageFrames = jQuery.parseJSON(arrayStageFrame);
-			if(stageFrames.length > 0){
-				//StageFrame(map, stage2, parentFrame, referredFrame, stringtext, font, color)
-				that.retrievedStageFrame = new StageFrame(stageFrames[0].map, that.stageManager.stage, null, null, stageFrames[0].text);
-				that.retrievedStageFrame.id = stageFrames[0].id;
-				that.stageManager.loadMap(that.retrievedStageFrame);
-				for(var i = 1; i < stageFrames.length; i++){
-					var child = new StageFrame(stageFrames[i].map, that.stageManager.stage, that.retrievedStageFrame, null, stageFrames[i].text, "48px Arial", "#000");
-					child.id = stageFrames[i].id;
-					child.x = stageFrames[i].x; 
-					child.y = stageFrames[i].y;
-					that.stageManager.prepareStageFrame(child);
-				}
+			try{
+				var stageFrames = jQuery.parseJSON(arrayStageFrame);
+				if(stageFrames.length > 0){
 
+					//StageFrame(map, stage2, parentFrame, referredFrame, stringtext, font, color)
+					that.retrievedStageFrame = new StageFrame(stageFrames[0].map, that.stageManager.stage, null, null, stageFrames[0].text);
+					that.retrievedStageFrame.id = stageFrames[0].id;
+					that.stageManager.loadMap(that.retrievedStageFrame);
+					for(var i = 1; i < stageFrames.length; i++){
+						var child = new StageFrame(stageFrames[i].map, that.stageManager.stage, that.retrievedStageFrame, null, stageFrames[i].text, "48px Arial", "#000");
+						child.id = stageFrames[i].id;
+						child.x = stageFrames[i].x; 
+						child.y = stageFrames[i].y;
+						that.stageManager.prepareStageFrame(child);
+					}
+
+				}
+				else{
+					//nao possui textos salvos
+					that.stageManager.startNewMap();
+				}
 			}
-			else{
-				//nao possui textos salvos
+			catch(e){
 				that.stageManager.startNewMap();
 			}
+			
 			//limpar referencia retrievedStageFrame para que as proximas chamadas nao peguem o ultimo stageFrame recuperado
 			//that.retrievedStageFrame = null; se der erro use isso.
 
