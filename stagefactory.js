@@ -28,45 +28,56 @@ function StageManagement(mapId, canvasProps, stage, listenerManager){
 	this.listenerManager = listenerManager;
 	this.behaviors = [];
 	this.mapId = mapId;
-	this.dao = new StageFrameDAO();
+	this.dao = new StageFrameDAO(this);
 
-	//primeiro frame pai de todos os outros do mapId não possui conteúdo.
-	this.currentFrame = new StageFrame(this.mapId, this.stage, null, null, "origin"); 
-	//persistir no mysql através do StageFrameDAO
-	this.dao.addStageFrame(this.currentFrame);
-
-	this.originFrame = this.currentFrame;
+	//carregar o primeiro frame do mapa pelo banco de dados se ja existir textos cadastrados  
+	this.dao.fetchOriginStageFrame(this.mapId, this.stage);
 	
+	
+	this.startNewMap = function(){
+		this.currentFrame = new StageFrame(this.mapId, this.stage, null, null, "origin"); 
+		//persistir novo frame no mysql através do StageFrameDAO
+		this.dao.addStageFrame(this.currentFrame);
+	};
+
+	this.loadMap = function(origin){
+		this.currentFrame = origin;
+		this.originFrame = this.currentFrame;
+	};
 
 	this.createTextHitArea = function(textElement){
 		
 
 	}
 
+
+	this.prepareStageFrame = function(stageFrame){
+		stageFrame.alpha = 1;
+		stageFrame.lineWidth = 1000;
+		var hit = new createjs.Shape();
+
+		hit.graphics.beginFill("#000").drawRect(0, 0, stageFrame.getBounds().width + 10, stageFrame.getMeasuredHeight() + 10);
+		stageFrame.hitArea = hit;
+
+		for(var x = 0; x < this.behaviors.length; x++){
+			this.behaviors[x].applyTo(stageFrame);
+		}
+		
+		stageFrame.parentFrame.addChildFrame(stageFrame);
+		stageFrame.parentFrame.drawLastInserted();
+	};
+
+
 	this.addText = function(stringtext, x, y){
-		//constructor StageFrame(map, stage2, parentFrame, referredFrame, stringtext, font, color)
+		//constructor StageFrame(map, stage2, parentFrame, referredFrame, stringtext, font, color, x, y)
 		var label1 = new StageFrame(this.mapId, this.stage, this.currentFrame, null, stringtext, "48px Arial", "#000");
 		label1.x = x;
 		label1.y = y;
-		label1.alpha = 1;
-		label1.lineWidth = 1000;
+
+		this.prepareStageFrame(label1);
 
 		this.dao.addStageFrame(label1);
 
-
-		var hit = new createjs.Shape();
-
-		hit.graphics.beginFill("#000").drawRect(0, 0, label1.getBounds().width + 10, label1.getMeasuredHeight() + 10);
-		label1.hitArea = hit;
-
-		for(var x = 0; x < this.behaviors.length; x++){
-			this.behaviors[x].applyTo(label1);
-		}
-		
-		this.currentFrame.addChildFrame(label1);
-		this.currentFrame.drawLastInserted(); //é melhor mudar para drawLastInserted
-
-		
 	};
 
 	this.translateMouseCoordinates = function(displayObject, x, y){

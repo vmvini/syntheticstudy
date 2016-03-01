@@ -15,7 +15,7 @@ function StageFrame(map, stage2, parentFrame, referredFrame, stringtext, font, c
 	this.map = map;
 
 	this.referredFrame = referredFrame;
-	
+
 
 
 	this.addChildFrame = function(stageFrame){
