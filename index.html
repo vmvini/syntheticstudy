@@ -10,6 +10,7 @@
 	<script src="StageFrame.js"></script>
 	<script src="stagefactory.js"></script>
 	<script src="handlers.js"></script>
+	<script src="img-touch-canvas.js"></script>
 
 	 <link rel="stylesheet" href="sstyle.css">
 
@@ -49,6 +50,10 @@
 
 <script>
 
+
+	var gesturableImg = new ImgTouchCanvas({
+            canvas: document.getElementById('myCanvas')
+        });
 
 	var canvasProps = new CanvasProps("myCanvas", window.innerWidth, window.innerHeight, 7, 0.1);
 	var listenerManager = new EventListenerManager();
